@@ -131,7 +131,7 @@ Open <http://localhost:8080>. API docs are at `/api/docs`.
 ## Tests and quality
 
 ```bash
-pytest          # 74 tests: domain rules + API flows (auth, privacy, check-in, reports, dashboard)
+pytest          # 76 tests: domain rules + API flows (auth, privacy, check-in, reports, dashboard)
 ruff check .    # lint, including bugbear and security (bandit) rules
 ```
 

@@ -21,7 +21,7 @@
 
 **How it fits the problem.** Every pain point in the brief maps to a feature: clear pay → spoken payslip; fear of identification → anonymous reports and team-level metrics; ignored hazards → triage and escalation deadlines; attrition → team health signals; low literacy and cheap phones → voice, icons and no camera. Industry rules are config files, and the demo runs a construction site and a hospital side by side.
 
-**Tech:** Python FastAPI · vanilla JS installable web app · Gemini on Vertex AI · Google Cloud Run · 74 unit and API tests · strict CSP, no API keys in code.
+**Tech:** Python FastAPI · vanilla JS installable web app · Gemini on Vertex AI · Google Cloud Run · 76 unit and API tests · strict CSP, no API keys in code.
 
 🔗 Live demo: <CLOUD_RUN_URL>
 💻 Code: https://github.com/Ashish-pvt/Project.git
