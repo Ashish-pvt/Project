@@ -1,0 +1,20 @@
+# Render Blueprint (preview hosting). The hackathon submission itself uses Google Cloud Run.
+services:
+  - type: web
+    name: fairshift
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: SECURE_COOKIES
+        value: "true"
+      - key: DEMO_MODE
+        value: "true"
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: SITE_CODE_SECRET
+        generateValue: true
