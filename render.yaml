@@ -18,3 +18,5 @@ services:
         generateValue: true
       - key: SITE_CODE_SECRET
         generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false # entered in the Render dashboard, never committed

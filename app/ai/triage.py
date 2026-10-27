@@ -1,8 +1,9 @@
 """SafeVoice triage: turn a worker's voice or text report into a structured issue.
 
-With Gemini on Vertex AI enabled, the model transcribes speech in any Indian language,
-translates it to English for the manager, and assigns a category and severity. Cloud
-Run authenticates to Vertex AI with its service identity, so no API key exists anywhere.
+With Gemini enabled, the model transcribes speech in any Indian language, translates it
+to English for the manager, and assigns a category and severity. On Cloud Run it uses
+Vertex AI with the service identity (no key); elsewhere it uses GEMINI_API_KEY from the
+environment. The key is never stored in code.
 
 Without AI (local development, tests, or an outage), a keyword classifier in English,
 Hindi and Tamil keeps the feature working for typed reports.
@@ -18,6 +19,8 @@ from app.config import Settings
 from app.domain.escalation import SEVERITIES
 
 log = logging.getLogger(__name__)
+
+AI_TIMEOUT_MS = 15_000
 
 
 @dataclass(frozen=True)
@@ -91,15 +94,26 @@ class Triager:
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
         self._client = None
-        if settings.ai_enabled and settings.gcp_project:
+        if settings.ai_enabled and (settings.gcp_project or settings.gemini_api_key):
             try:
                 from google import genai
+                from google.genai import types
 
-                self._client = genai.Client(
-                    vertexai=True,
-                    project=settings.gcp_project,
-                    location=settings.gcp_location,
-                )
+                # A worker is waiting on this request: fail fast and fall back to keywords.
+                http = types.HttpOptions(timeout=AI_TIMEOUT_MS)
+                if settings.gcp_project:
+                    # Preferred on Cloud Run: Vertex AI with the service identity, no key.
+                    self._client = genai.Client(
+                        vertexai=True,
+                        project=settings.gcp_project,
+                        location=settings.gcp_location,
+                        http_options=http,
+                    )
+                else:
+                    # Hosts outside Google Cloud (Render, local): AI Studio key from env.
+                    self._client = genai.Client(
+                        api_key=settings.gemini_api_key, http_options=http
+                    )
             except Exception:  # noqa: BLE001 - AI is optional; fall back to keywords
                 log.exception("Gemini client unavailable; using keyword triage")
 
@@ -148,7 +162,7 @@ class Triager:
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
                 temperature=0.1,
-                max_output_tokens=512,
+                max_output_tokens=1024,
             ),
         )
         data = json.loads(response.text)

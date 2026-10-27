@@ -158,8 +158,9 @@ Accessor** roles.
 | `SESSION_SECRET` | random per process | Signs login cookies |
 | `SITE_CODE_SECRET` | random per process | Seeds rotating check-in codes |
 | `GOOGLE_CLOUD_PROJECT` | unset | Enables Gemini triage through Vertex AI |
-| `GEMINI_MODEL` | `gemini-2.5-flash` | Model used for triage |
-| `AI_ENABLED` | on when a project is set | Turns AI triage on or off |
+| `GEMINI_API_KEY` | unset | Google AI Studio key for hosts outside Google Cloud (Render, local `.env`). Not needed on Cloud Run. |
+| `GEMINI_MODEL` | `gemini-3.5-flash-lite` | Model used for triage (fast: about 2 s per report) |
+| `AI_ENABLED` | on when a project or key is set | Turns AI triage on or off |
 | `DEMO_MODE` | `true` | One-click demo logins |
 
 ## Project structure
